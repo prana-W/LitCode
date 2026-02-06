@@ -4,7 +4,7 @@
   "description": "Your LeetCode companion running 100% locally",
   "version": "1.0",
   "permissions": ["activeTab", "scripting"],
-  "host_permissions": ["http://localhost:11434/*"],
+  "host_permissions": ["http://localhost:3000/*"],
   "background": {
     "service_worker": "background.js"
   },
@@ -13,8 +13,9 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://leetcode.com/*"],
-      "js": ["content.js"]
+      "matches": ["https://leetcode.com/problems/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
     }
   ]
 }
