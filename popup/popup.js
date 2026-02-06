@@ -13,12 +13,10 @@ function buildPrompt(problemText) {
         "The JSON must have exactly these keys:",
         "time_complexity",
         "space_complexity",
-        "expected_solve_time",
         "",
         "Rules:",
         "time_complexity: Big-O of the optimal solution (e.g. O(n), O(n log n))",
         "space_complexity: Big-O of the optimal solution",
-        "expected_solve_time: time in minutes for an average candidate",
         "",
         "Problem:",
         problemText.trim()

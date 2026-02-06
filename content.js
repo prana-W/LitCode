@@ -1,3 +1,35 @@
+let lastProblemSlug = null;
+
+function getCurrentProblemSlug() {
+    const match = window.location.pathname.match(/\/problems\/([^/]+)\//);
+    return match ? match[1] : null;
+}
+
+function clearAnalysis() {
+    const wrapper = document.getElementById("ollama-analysis-pills");
+    if (wrapper) wrapper.remove();
+}
+
+function observeProblemChange() {
+    const observer = new MutationObserver(() => {
+        const currentSlug = getCurrentProblemSlug();
+
+        if (currentSlug && lastProblemSlug && currentSlug !== lastProblemSlug) {
+            clearAnalysis();
+        }
+
+        lastProblemSlug = currentSlug;
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+}
+
+// Start observing immediately
+observeProblemChange();
+
 function getProblemText() {
     const container = document.querySelector(
         '[data-track-load="description_content"]'
@@ -39,14 +71,12 @@ function createPill(id, text) {
     return pill;
 }
 
-
 function injectAnalysis(data) {
     const pillRow = findPillRowByTopics();
     if (!pillRow) return;
 
     let wrapper = document.getElementById("ollama-analysis-pills");
 
-    // Create pills if not present
     if (!wrapper) {
         wrapper = document.createElement("div");
         wrapper.id = "ollama-analysis-pills";
@@ -66,7 +96,6 @@ function injectAnalysis(data) {
     // Update existing pills
     const timePill = document.getElementById("ollama-time");
     const spacePill = document.getElementById("ollama-space");
-    const solveTimePill = document.getElementById("ollama-solve-time");
 
     if (timePill) {
         timePill.textContent = `T.C: ${data.time_complexity}`;
@@ -76,6 +105,9 @@ function injectAnalysis(data) {
     }
 }
 
+// ─────────────────────────────────────────────
+// Message listeners
+// ─────────────────────────────────────────────
 chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
     if (req.type === "GET_PROBLEM") {
         sendResponse({ text: getProblemText() });
