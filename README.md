@@ -1,6 +1,6 @@
 # LitCode — Your LeetCode Coding Assistant
 
-LitCode is a browser-based LeetCode assistant designed to help you **understand problems better before coding**.
+LitCode is a browser-extension LeetCode assistant designed to help you **understand problems better before coding**.
 
 ---
 
