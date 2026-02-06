@@ -78,7 +78,6 @@ btn.onclick = async () => {
         output.innerHTML = `
       <div class="pill">Time: ${data.time_complexity}</div>
       <div class="pill">Space: ${data.space_complexity}</div>
-      <div class="pill">Solve Time: ${data.expected_solve_time} min</div>
     `;
 
         chrome.tabs.sendMessage(tab.id, {
