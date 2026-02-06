@@ -12,8 +12,25 @@ function getProblemText() {
         .join("\n\n");
 }
 
-function createPill(text) {
+function findPillRowByTopics() {
+    const candidates = Array.from(document.querySelectorAll("div, span"))
+        .filter(el => el.innerText?.trim() === "Topics");
+
+    if (!candidates.length) return null;
+
+    const topicsText = candidates[0];
+
+    const pill = topicsText.closest(
+        ".relative.inline-flex.items-center.justify-center"
+    );
+    if (!pill) return null;
+
+    return pill.parentElement;
+}
+
+function createPill(id, text) {
     const pill = document.createElement("div");
+    pill.id = id;
     pill.className =
         "relative inline-flex items-center justify-center text-caption px-2 py-1 gap-1 rounded-full bg-fill-secondary " +
         "cursor-default transition-colors text-sd-secondary-foreground";
@@ -22,30 +39,41 @@ function createPill(text) {
     return pill;
 }
 
-function injectAnalysis(data) {
-    // Avoid duplicates
-    if (document.getElementById("ollama-analysis-pills")) return;
 
-    // Find the pill row (difficulty / topics / companies)
-    const pillRow = document.querySelector(".flex.gap-1");
-    console.log(pillRow)
+function injectAnalysis(data) {
+    const pillRow = findPillRowByTopics();
     if (!pillRow) return;
 
-    const wrapper = document.createElement("div");
-    wrapper.id = "ollama-analysis-pills";
-    wrapper.className = "flex gap-1";
+    let wrapper = document.getElementById("ollama-analysis-pills");
 
-    wrapper.appendChild(
-        createPill(`⏱ ${data.time_complexity}`)
-    );
-    wrapper.appendChild(
-        createPill(`💾 ${data.space_complexity}`)
-    );
-    wrapper.appendChild(
-        createPill(`🧠 ${data.expected_solve_time} min`)
-    );
+    // Create pills if not present
+    if (!wrapper) {
+        wrapper = document.createElement("div");
+        wrapper.id = "ollama-analysis-pills";
+        wrapper.className = "flex gap-1";
 
-    pillRow.appendChild(wrapper);
+        wrapper.appendChild(
+            createPill("ollama-time", `T.C: ${data.time_complexity}`)
+        );
+        wrapper.appendChild(
+            createPill("ollama-space", `S.C: ${data.space_complexity}`)
+        );
+
+        pillRow.appendChild(wrapper);
+        return;
+    }
+
+    // Update existing pills
+    const timePill = document.getElementById("ollama-time");
+    const spacePill = document.getElementById("ollama-space");
+    const solveTimePill = document.getElementById("ollama-solve-time");
+
+    if (timePill) {
+        timePill.textContent = `T.C: ${data.time_complexity}`;
+    }
+    if (spacePill) {
+        spacePill.textContent = `S.C: ${data.space_complexity}`;
+    }
 }
 
 chrome.runtime.onMessage.addListener((req, sender, sendResponse) => {
